@@ -15,6 +15,13 @@ app.append(miceSmushButton);
 
 const smushCounter = document.createElement("div");
 smushCounter.style.fontSize = "35px";
-const counter: number = 0;
+let counter: number = 0;
 smushCounter.innerHTML = counter.toString();
 app.append(smushCounter);
+
+function incrementCounter() {
+  counter++;
+  smushCounter.innerHTML = counter.toString();
+}
+setInterval(incrementCounter, 1000);
+miceSmushButton.addEventListener("click", incrementCounter);
