@@ -19,9 +19,16 @@ let counter: number = 0;
 smushCounter.innerHTML = counter.toString();
 app.append(smushCounter);
 
-function incrementCounter() {
-  counter++;
-  smushCounter.innerHTML = counter.toString();
+function incrementCounter(amount: number) {
+  counter += amount;
+  smushCounter.innerHTML = counter.toFixed(2);
 }
-setInterval(incrementCounter, 1000);
-miceSmushButton.addEventListener("click", incrementCounter);
+miceSmushButton.addEventListener("click", () => incrementCounter(1));
+
+requestAnimationFrame(update);
+let lastTimestamp: number = 0;
+function update(timestamp: number) {
+  incrementCounter((timestamp - lastTimestamp) / 1000);
+  lastTimestamp = timestamp;
+  requestAnimationFrame(update);
+}
