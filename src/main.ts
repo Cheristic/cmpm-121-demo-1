@@ -13,6 +13,8 @@ interface Upgrade {
   costText: null | HTMLSpanElement;
   purchased: number;
   rate: number;
+  currentRateText: null | HTMLSpanElement;
+  description: string;
 }
 // store upgrades as an array
 const upgrades: Upgrade[] = [
@@ -25,6 +27,8 @@ const upgrades: Upgrade[] = [
     costText: null,
     purchased: 0,
     rate: 0.1,
+    currentRateText: null,
+    description: "lightly taps your mouse with love",
   },
   {
     name: "Meat Pounder",
@@ -35,6 +39,20 @@ const upgrades: Upgrade[] = [
     costText: null,
     purchased: 0,
     rate: 2,
+    currentRateText: null,
+    description: "pulverizes your mouse into a thin flat plane",
+  },
+  {
+    name: "The Weight of the World",
+    cost: 500,
+    button: null,
+    rateText: null,
+    purchasedText: null,
+    costText: null,
+    purchased: 0,
+    rate: 0,
+    currentRateText: null,
+    description: "all your efforts become once more",
   },
   {
     name: "Hydraulic Press",
@@ -45,6 +63,20 @@ const upgrades: Upgrade[] = [
     costText: null,
     purchased: 0,
     rate: 50,
+    currentRateText: null,
+    description: "the force of a thousand youtube videos",
+  },
+  {
+    name: "Yo Mamma",
+    cost: 2500,
+    button: null,
+    rateText: null,
+    purchasedText: null,
+    costText: null,
+    purchased: 0,
+    rate: 200,
+    currentRateText: null,
+    description: "so fat haha",
   },
 ];
 
@@ -67,6 +99,7 @@ function SetupApp() {
   header.append(headerText);
 
   const centerContainer = document.createElement("div");
+  centerContainer.setAttribute("style", "margin-top:-100px;");
   app.append(centerContainer);
 
   smushCounter = document.createElement("h1");
@@ -120,7 +153,7 @@ function SetupUpgrades() {
     const box = document.createElement("div");
     box.setAttribute(
       "style",
-      "text-align:center; flex; 2 2;transform:translateY(30%);",
+      "text-align:center; flex; 2 2;transform:translateY(30%);margin-top:-30px;margin-bottom:5px;",
     );
 
     const rateText = document.createElement("p");
@@ -159,6 +192,7 @@ function SetupUpgrades() {
       "style",
       "margin-top:10px;margin-left:10px;color:gray;font-size:14px;",
     );
+    upgrade.currentRateText = rateAmount;
     cost.append(rateAmount);
 
     const amountPurchased = document.createElement("span");
@@ -170,6 +204,14 @@ function SetupUpgrades() {
     upgrade.purchasedText = amountPurchased;
     cost.append(amountPurchased);
     box.append(upgradeButton);
+
+    const tooltip = document.createElement("p");
+    tooltip.innerHTML = upgrade.description;
+    tooltip.setAttribute(
+      "style",
+      "margin-top:0px;margin-left:0px;color:gray;font-size:12px;margin-bottom:0px;font-style:italic",
+    );
+    upgradeButton.append(tooltip);
 
     bottomUpgradeContainer.append(box);
   });
@@ -230,6 +272,9 @@ function UpdateUpgrades() {
       }
     }
   });
+  upgrades[2].rate = autoGrowth;
+  if (upgrades[2].currentRateText)
+    upgrades[2].currentRateText.innerHTML = "(" + autoGrowth.toFixed(1) + "x)";
 }
 
 main();
