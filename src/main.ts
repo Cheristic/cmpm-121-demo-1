@@ -34,16 +34,66 @@ app.append(document.createElement("br"));
 const bottomUpgradeContainer = document.createElement("div");
 bottomUpgradeContainer.setAttribute(
   "style",
-  "height: 40px; position: fixed; bottom:2%;width:100%;display:flex; flex-wrap:wrap;justify-content:center;",
+  "height: 200px; position: fixed; bottom:2%;width:100%;display:flex; flex-wrap:wrap;justify-content:center;",
 );
 document.body.append(bottomUpgradeContainer);
-const upgradeOneButton = document.createElement("button");
-upgradeOneButton.innerHTML = "Purchase auto-pounder";
-upgradeOneButton.disabled = true;
-bottomUpgradeContainer.append(upgradeOneButton);
 
-const upgradeOneAmount = document.createElement("p");
-bottomUpgradeContainer.append(upgradeOneAmount);
+interface Upgrade {
+  name: string;
+  cost: number;
+  button: null | HTMLButtonElement;
+  rateText: null | HTMLParagraphElement;
+  purchased: number;
+  rate: number;
+}
+
+const upgrades: Upgrade[] = [
+  {
+    name: "Auto-Pounder",
+    cost: 10,
+    button: null,
+    rateText: null,
+    purchased: 0,
+    rate: 0.1,
+  },
+  {
+    name: "Auto-Pounder",
+    cost: 10,
+    button: null,
+    rateText: null,
+    purchased: 0,
+    rate: 0.1,
+  },
+];
+
+upgrades.forEach((upgrade) => {
+  const box = document.createElement("div");
+  box.setAttribute(
+    "style",
+    "text-align:center; flex; 2 2;transform:translateY(30%);",
+  );
+
+  const rateText = document.createElement("p");
+  upgrade.rateText = rateText;
+  rateText.textContent = "0/sec";
+  box.append(rateText);
+
+  const upgradeButton = document.createElement("button");
+  upgrade.button = upgradeButton;
+  upgradeButton.disabled = true;
+  upgradeButton.innerHTML = upgrade.name;
+  upgradeButton.setAttribute("style", "text-align:left;font-size:23px;");
+  const cost = document.createElement("h3");
+  cost.setAttribute(
+    "style",
+    "color:red;margin-top:-3px;margin-bottom:-3px;font-size:18px",
+  );
+  cost.innerHTML = "Buy for " + upgrade.cost.toString();
+  upgradeButton.append(cost);
+  box.append(upgradeButton);
+
+  bottomUpgradeContainer.append(box);
+});
 
 let counter: number = 0;
 
@@ -54,9 +104,9 @@ function incrementCounter(amount: number) {
 miceSmushButton.addEventListener("click", () => incrementCounter(1));
 
 requestAnimationFrame(update);
-requestAnimationFrame(checkForUpgradeOne);
+//requestAnimationFrame(checkForUpgradeOne);
 
-let growthRate = 0;
+const growthRate = 0;
 
 let lastTimestamp: number = 0;
 function update(timestamp: number) {
@@ -65,17 +115,17 @@ function update(timestamp: number) {
   requestAnimationFrame(update);
 }
 
-function checkForUpgradeOne() {
-  if (counter >= 10) {
-    upgradeOneButton.disabled = false;
-  } else requestAnimationFrame(checkForUpgradeOne);
-}
-upgradeOneButton.addEventListener("click", () => {
-  counter -= 10;
-  growthRate++;
-  if (counter < 10) {
-    upgradeOneButton.disabled = true;
-    requestAnimationFrame(checkForUpgradeOne);
-  }
-  upgradeOneAmount.textContent = `AUTO-POUNDER x${growthRate}`;
-});
+// function checkForUpgradeOne() {
+//   if (counter >= 10) {
+//     upgradeOneButton.disabled = false;
+//   } else requestAnimationFrame(checkForUpgradeOne);
+// }
+// upgradeOneButton.addEventListener("click", () => {
+//   counter -= 10;
+//   growthRate++;
+//   if (counter < 10) {
+//     upgradeOneButton.disabled = true;
+//     requestAnimationFrame(checkForUpgradeOne);
+//   }
+//   upgradeOneAmount.textContent = `AUTO-POUNDER x${growthRate}`;
+// });
