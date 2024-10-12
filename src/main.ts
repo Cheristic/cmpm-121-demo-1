@@ -14,7 +14,6 @@ interface Upgrade {
   purchased: number;
   rate: number;
 }
-
 const upgrades: Upgrade[] = [
   {
     name: "Drinking Bird",
@@ -37,7 +36,7 @@ const upgrades: Upgrade[] = [
     rate: 2,
   },
   {
-    name: "Hydralic Press",
+    name: "Hydraulic Press",
     cost: 1000,
     button: null,
     rateText: null,
@@ -58,23 +57,38 @@ function SetupApp() {
   header.setAttribute("id", "head");
   header.setAttribute(
     "style",
-    "vertical-align: text-top;color:#6dd47b;font-size: 1em;text-align: center;font-style:italic;font-family:papyrus;",
+    "vertical-align: text-top;-webkit-text-stroke: 2px #aaa676;color:#2f2d12;font-size: 1em;text-shadow: 0px 4.5px 4px #36301f;text-align: center;font-style:italic;font-family:papyrus;",
   );
   document.body.prepend(header);
   const headerText = document.createElement("h1");
   headerText.innerHTML = gameName;
+  headerText.setAttribute("style", "margin-top: 0px; padding-top: 20px;");
   header.append(headerText);
 
   const centerContainer = document.createElement("div");
   app.append(centerContainer);
 
-  smushCounter = document.createElement("div");
-  smushCounter.style.fontSize = "35px";
+  smushCounter = document.createElement("h1");
+  smushCounter.setAttribute(
+    "style",
+    "color:#bfabac; font-size: 70px;-webkit-text-stroke: 2px #453634;margin-bottom:-40px;text-shadow: 0px 2px 4px #1e1e1e;",
+  );
   smushCounter.innerHTML = "0";
   centerContainer.append(smushCounter);
 
+  const smushText = document.createElement("h3");
+  smushText.setAttribute(
+    "style",
+    "color:#bfabac; font-size: 40px;-webkit-text-stroke: 2px #453634;margin-bottom:70px;text-shadow: 0px 2px 4px #1e1e1e;",
+  );
+  smushText.innerHTML = "smushes";
+  centerContainer.append(smushText);
+
   miceSmushButton = document.createElement("button");
-  miceSmushButton.setAttribute("style", "width:150px;height:150px;");
+  miceSmushButton.setAttribute(
+    "style",
+    "width:150px;height:150px;box-shadow: 0px 2px 4px #1e1e1e;",
+  );
   const miceText = document.createElement("h1");
   miceText.innerHTML = "🐁";
   miceText.setAttribute(
@@ -84,8 +98,12 @@ function SetupApp() {
   miceSmushButton.append(miceText);
   app.append(miceSmushButton);
 
-  totalRate = document.createElement("h3");
+  totalRate = document.createElement("h2");
   totalRate.innerHTML = "0/sec";
+  totalRate.setAttribute(
+    "style",
+    "margin-top:1px;color:#d7aaa6;-webkit-text-stroke: .5px #453634;text-shadow: 0px 2px 4px #1e1e1e;",
+  );
   app.append(totalRate);
 
   bottomUpgradeContainer = document.createElement("div");
@@ -107,7 +125,10 @@ function SetupUpgrades() {
     const rateText = document.createElement("p");
     upgrade.rateText = rateText;
     rateText.textContent = "0/sec";
-    rateText.setAttribute("style", "text-align:center;");
+    rateText.setAttribute(
+      "style",
+      "font-size: 25px;margin-bottom:0px;text-align:center;color:#d7aaa6;-webkit-text-stroke: .5px #453634;text-shadow: 0px 2px 4px #1e1e1e;",
+    );
     box.append(rateText);
 
     const upgradeButton = document.createElement("button");
@@ -116,7 +137,7 @@ function SetupUpgrades() {
     upgradeButton.innerHTML = upgrade.name;
     upgradeButton.setAttribute(
       "style",
-      "text-align:left;font-size:23px;padding-right:60px;",
+      "text-align:left;font-size:23px;padding-right:60px;;box-shadow: 0px 2px 4px #575757;",
     );
 
     const cost = document.createElement("h3");
@@ -201,6 +222,11 @@ function UpdateUpgrades() {
   upgrades.forEach((upgrade) => {
     if (upgrade.button != null) {
       upgrade.button.disabled = totalSmushes < upgrade.cost;
+      if (upgrade.costText) {
+        if (upgrade.button.disabled)
+          upgrade.costText.setAttribute("style", "color:red");
+        else upgrade.costText.setAttribute("style", "color:green");
+      }
     }
   });
 }
