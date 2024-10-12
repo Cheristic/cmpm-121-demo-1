@@ -1,18 +1,26 @@
 import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
-
 const gameName = "My freaking sweet lil game";
 document.title = gameName;
 
-const header = document.createElement("h1");
-header.innerHTML = gameName;
-app.append(header);
+const header = document.createElement("div");
+header.setAttribute("id", "head");
+header.setAttribute(
+  "style",
+  "vertical-align: text-top;font-size: 1em;text-align: center;",
+);
+document.body.prepend(header);
+const headerText = document.createElement("h1");
+headerText.innerHTML = gameName;
+header.append(headerText);
 
+const centerContainer = document.createElement("div");
+app.append(centerContainer);
 const smushCounter = document.createElement("div");
 smushCounter.style.fontSize = "35px";
 smushCounter.innerHTML = "0";
-app.append(smushCounter);
+centerContainer.append(smushCounter);
 
 app.append(document.createElement("br"));
 
@@ -23,13 +31,19 @@ app.append(miceSmushButton);
 app.append(document.createElement("br"));
 app.append(document.createElement("br"));
 
+const bottomUpgradeContainer = document.createElement("div");
+bottomUpgradeContainer.setAttribute(
+  "style",
+  "height: 40px; position: fixed; bottom:2%;width:100%;display:flex; flex-wrap:wrap;justify-content:center;",
+);
+document.body.append(bottomUpgradeContainer);
 const upgradeOneButton = document.createElement("button");
 upgradeOneButton.innerHTML = "Purchase auto-pounder";
 upgradeOneButton.disabled = true;
-app.append(upgradeOneButton);
+bottomUpgradeContainer.append(upgradeOneButton);
 
 const upgradeOneAmount = document.createElement("p");
-app.append(upgradeOneAmount);
+bottomUpgradeContainer.append(upgradeOneAmount);
 
 let counter: number = 0;
 
