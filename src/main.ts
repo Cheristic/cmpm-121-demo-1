@@ -14,6 +14,7 @@ interface Upgrade {
   purchased: number;
   rate: number;
 }
+// store upgrades as an array
 const upgrades: Upgrade[] = [
   {
     name: "Drinking Bird",
