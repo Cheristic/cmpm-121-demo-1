@@ -148,72 +148,93 @@ function SetupApp() {
   document.body.append(bottomUpgradeContainer);
 }
 
+function createUpgradeElement(
+  htmlType: string,
+  innerHTML: string,
+  style: string,
+): HTMLElement {
+  const element = document.createElement(htmlType);
+  element.setAttribute("style", style);
+  element.innerHTML = innerHTML;
+  return element;
+}
+
+function createUpgradeButton(upgrade: Upgrade, upgradeBox: HTMLElement) {
+  const upgradeButton = createUpgradeElement(
+    "button",
+    upgrade.name,
+    "text-align:left;font-size:23px;padding-right:60px;;box-shadow: 0px 2px 4px #575757;",
+  ) as HTMLButtonElement;
+  upgrade.button = upgradeButton;
+  upgradeButton.disabled = true;
+
+  const cost = createUpgradeElement(
+    "h3",
+    "",
+    "color:red;margin-top:-3px;margin-bottom:-3px;font-size:18px;",
+  );
+
+  const costText = createUpgradeElement(
+    "span",
+    "$" + upgrade.cost.toString(),
+    "",
+  );
+  upgrade.costText = costText;
+  cost.append(costText);
+
+  const rateAmount = createUpgradeElement(
+    "span",
+    "(" + upgrade.rate.toFixed(1) + "x)",
+    "margin-top:10px;margin-left:10px;color:gray;font-size:14px;",
+  );
+  upgrade.currentRateText = rateAmount;
+  cost.append(rateAmount);
+
+  const amountPurchased = createUpgradeElement(
+    "span",
+    "0",
+    "color:white;float:right;margin-top:-15px;margin-right: -35px;",
+  );
+  upgrade.purchasedText = amountPurchased;
+  cost.append(amountPurchased);
+
+  upgradeButton.append(cost);
+
+  const tooltip = createUpgradeElement(
+    "p",
+    upgrade.description,
+    "margin-top:0px;margin-left:0px;color:gray;font-size:12px;margin-bottom:0px;font-style:italic",
+  );
+  upgradeButton.append(tooltip);
+
+  upgradeBox.append(upgradeButton);
+}
+
+function createUpgradeBox(upgrade: Upgrade) {
+  const upgradeBox = createUpgradeElement(
+    "div",
+    "",
+    "text-align:center; flex; 2 2;transform:translateY(30%);margin-top:-30px;margin-bottom:5px;",
+  );
+
+  const rateText = createUpgradeElement(
+    "p",
+    "0/sec",
+    "font-size: 25px;margin-bottom:0px;text-align:center;color:#d7aaa6;-webkit-text-stroke: .5px #453634;text-shadow: 0px 2px 4px #1e1e1e;",
+  );
+  upgrade.rateText = rateText as HTMLParagraphElement;
+
+  upgradeBox.append(rateText);
+  bottomUpgradeContainer.append(upgradeBox);
+
+  createUpgradeButton(upgrade, upgradeBox);
+}
+
+const UPGRADE_PRICE_INFLATION = 1.15;
+
 function SetupUpgrades() {
   upgrades.forEach((upgrade) => {
-    const box = document.createElement("div");
-    box.setAttribute(
-      "style",
-      "text-align:center; flex; 2 2;transform:translateY(30%);margin-top:-30px;margin-bottom:5px;",
-    );
-
-    const rateText = document.createElement("p");
-    upgrade.rateText = rateText;
-    rateText.textContent = "0/sec";
-    rateText.setAttribute(
-      "style",
-      "font-size: 25px;margin-bottom:0px;text-align:center;color:#d7aaa6;-webkit-text-stroke: .5px #453634;text-shadow: 0px 2px 4px #1e1e1e;",
-    );
-    box.append(rateText);
-
-    const upgradeButton = document.createElement("button");
-    upgrade.button = upgradeButton;
-    upgradeButton.disabled = true;
-    upgradeButton.innerHTML = upgrade.name;
-    upgradeButton.setAttribute(
-      "style",
-      "text-align:left;font-size:23px;padding-right:60px;;box-shadow: 0px 2px 4px #575757;",
-    );
-
-    const cost = document.createElement("h3");
-    cost.setAttribute(
-      "style",
-      "color:red;margin-top:-3px;margin-bottom:-3px;font-size:18px;",
-    );
-    const costText = document.createElement("span");
-
-    costText.innerHTML = "$" + upgrade.cost.toString();
-    upgrade.costText = costText;
-    cost.append(costText);
-    upgradeButton.append(cost);
-
-    const rateAmount = document.createElement("span");
-    rateAmount.innerHTML = "(" + upgrade.rate.toFixed(1) + "x)";
-    rateAmount.setAttribute(
-      "style",
-      "margin-top:10px;margin-left:10px;color:gray;font-size:14px;",
-    );
-    upgrade.currentRateText = rateAmount;
-    cost.append(rateAmount);
-
-    const amountPurchased = document.createElement("span");
-    amountPurchased.innerHTML = "0";
-    amountPurchased.setAttribute(
-      "style",
-      "color:white;float:right;margin-top:-15px;margin-right: -35px;",
-    );
-    upgrade.purchasedText = amountPurchased;
-    cost.append(amountPurchased);
-    box.append(upgradeButton);
-
-    const tooltip = document.createElement("p");
-    tooltip.innerHTML = upgrade.description;
-    tooltip.setAttribute(
-      "style",
-      "margin-top:0px;margin-left:0px;color:gray;font-size:12px;margin-bottom:0px;font-style:italic",
-    );
-    upgradeButton.append(tooltip);
-
-    bottomUpgradeContainer.append(box);
+    createUpgradeBox(upgrade);
   });
 
   // Set up upgrade features
@@ -230,7 +251,7 @@ function SetupUpgrades() {
 
       autoGrowth += upgrade.rate;
       totalRate.innerHTML = autoGrowth.toFixed(2) + "/sec";
-      upgrade.cost *= 1.15;
+      upgrade.cost *= UPGRADE_PRICE_INFLATION;
       if (upgrade.costText)
         upgrade.costText.innerHTML = "$" + upgrade.cost.toFixed(1);
     });
@@ -263,18 +284,21 @@ function update(timestamp: number) {
 
 function UpdateUpgrades() {
   upgrades.forEach((upgrade) => {
-    if (upgrade.button != null) {
-      upgrade.button.disabled = totalSmushes < upgrade.cost;
-      if (upgrade.costText) {
-        if (upgrade.button.disabled)
-          upgrade.costText.setAttribute("style", "color:red");
-        else upgrade.costText.setAttribute("style", "color:green");
-      }
+    const { button, costText, cost } = upgrade;
+
+    if (!button) return;
+
+    button.disabled = totalSmushes < cost;
+
+    if (costText) {
+      costText.style.color = button.disabled ? "red" : "green";
     }
   });
-  upgrades[2].rate = autoGrowth;
-  if (upgrades[2].currentRateText)
-    upgrades[2].currentRateText.innerHTML = "(" + autoGrowth.toFixed(1) + "x)";
+
+  const worldUpgrade = upgrades[2];
+  worldUpgrade.rate = autoGrowth;
+  if (worldUpgrade.currentRateText)
+    worldUpgrade.currentRateText.innerHTML = "(" + autoGrowth.toFixed(1) + "x)";
 }
 
 main();
