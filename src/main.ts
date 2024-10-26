@@ -200,13 +200,6 @@ function createUpgradeButton(upgrade: Upgrade, upgradeBox: HTMLElement) {
 
   upgradeButton.append(cost);
 
-  const tooltip = createUpgradeElement(
-    "p",
-    upgrade.description,
-    "margin-top:0px;margin-left:0px;color:gray;font-size:12px;margin-bottom:0px;font-style:italic",
-  );
-  upgradeButton.append(tooltip);
-
   upgradeBox.append(upgradeButton);
 }
 
@@ -222,6 +215,7 @@ function createUpgradeBox(upgrade: Upgrade) {
     "0/sec",
     "font-size: 25px;margin-bottom:0px;text-align:center;color:#d7aaa6;-webkit-text-stroke: .5px #453634;text-shadow: 0px 2px 4px #1e1e1e;",
   );
+  rateText.style.visibility = "hidden";
   upgrade.rateText = rateText as HTMLParagraphElement;
 
   upgradeBox.append(rateText);
@@ -232,29 +226,54 @@ function createUpgradeBox(upgrade: Upgrade) {
 
 const UPGRADE_PRICE_INFLATION = 1.15;
 
-function SetupUpgrades() {
-  upgrades.forEach((upgrade) => {
-    createUpgradeBox(upgrade);
+function setUpgradeButtonClickListener(upgrade: Upgrade) {
+  upgrade.button?.addEventListener("click", () => {
+    totalSmushes -= upgrade.cost;
+    upgrade.purchased++;
+    if (upgrade.purchasedText)
+      upgrade.purchasedText.innerHTML = upgrade.purchased.toFixed(0);
+    if (upgrade.rateText) {
+      upgrade.rateText.style.visibility = "visible"; // visibility idea from https://elliem-gd.github.io/cmpm-121-demo-1/
+      upgrade.rateText.innerHTML =
+        (upgrade.rate * upgrade.purchased).toFixed(1) + "/sec";
+    }
+
+    autoGrowth += upgrade.rate;
+    totalRate.innerHTML = autoGrowth.toFixed(2) + "/sec";
+    upgrade.cost *= UPGRADE_PRICE_INFLATION;
+    if (upgrade.costText)
+      upgrade.costText.innerHTML = "$" + upgrade.cost.toFixed(1);
+  });
+}
+
+function createButtonHover(upgrade: Upgrade, hover: HTMLElement) {
+  // code inspired by https://github.com/NickCorfmat/cmpm-121-demo-1/blob/main/src/main.ts
+  const button = upgrade.button;
+
+  button?.addEventListener("mouseover", () => {
+    hover.innerHTML = upgrade.description;
+    hover.style.visibility = "visible";
   });
 
-  // Set up upgrade features
+  button?.addEventListener("mousemove", (e) => {
+    hover.style.left = `${e.pageX + 10}px`;
+    hover.style.top = `${e.pageY + 10}px`;
+  });
+
+  button?.addEventListener("mouseout", () => {
+    hover.style.visibility = "hidden";
+  });
+}
+
+function SetupUpgrades() {
+  const buttonHoverDescription = document.createElement("div");
+  buttonHoverDescription.classList.add("buttonHover");
+  document.body.appendChild(buttonHoverDescription);
 
   upgrades.forEach((upgrade) => {
-    upgrade.button?.addEventListener("click", () => {
-      totalSmushes -= upgrade.cost;
-      upgrade.purchased++;
-      if (upgrade.purchasedText)
-        upgrade.purchasedText.innerHTML = upgrade.purchased.toFixed(0);
-      if (upgrade.rateText)
-        upgrade.rateText.innerHTML =
-          (upgrade.rate * upgrade.purchased).toFixed(1) + "/sec";
-
-      autoGrowth += upgrade.rate;
-      totalRate.innerHTML = autoGrowth.toFixed(2) + "/sec";
-      upgrade.cost *= UPGRADE_PRICE_INFLATION;
-      if (upgrade.costText)
-        upgrade.costText.innerHTML = "$" + upgrade.cost.toFixed(1);
-    });
+    createUpgradeBox(upgrade);
+    setUpgradeButtonClickListener(upgrade);
+    createButtonHover(upgrade, buttonHoverDescription);
   });
 }
 

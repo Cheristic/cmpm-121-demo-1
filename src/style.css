@@ -67,6 +67,22 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.buttonHover {
+  position: absolute;
+  padding: 5px;
+  background-color: #1a1a1a;
+  color: white;
+  border-radius: 5px;
+  visibility: hidden;
+  pointer-events: none;
+  margin-top: 0px;
+  margin-left: 0px;
+  color: gray;
+  font-size: 15px;
+  margin-bottom: 0px;
+  font-style: italic;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
